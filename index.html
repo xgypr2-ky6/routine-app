@@ -507,6 +507,25 @@ function drawWeightChart(){
   ctx.strokeStyle = "#d7b873"; ctx.lineWidth = 3; ctx.beginPath(); weights.forEach((w, i) => { const x = toX(i), y = toY(Number(w.value)); if(i === 0) ctx.moveTo(x,y); else ctx.lineTo(x,y); }); ctx.stroke();
   ctx.fillStyle = "#eeb8c8"; weights.forEach((w,i) => { const x = toX(i), y = toY(Number(w.value)); ctx.beginPath(); ctx.arc(x,y,5,0,Math.PI*2); ctx.fill(); ctx.strokeStyle = "#fff"; ctx.lineWidth = 2; ctx.stroke(); });
   ctx.fillStyle = "#7d6d65"; ctx.font = "11px sans-serif"; ctx.fillText(max.toFixed(1), 6, top + 4); ctx.fillText(min.toFixed(1), 6, bottom);
+// 週平均計算
+const weekly = [];
+for(let i=0;i<weights.length;i++){
+  const slice = weights.slice(Math.max(0,i-6), i+1);
+  const avg = slice.reduce((a,b)=>a+Number(b.value),0)/slice.length;
+  weekly.push(avg);
+}
+
+// 平均ライン描画
+ctx.strokeStyle = "#eeb8c8";
+ctx.lineWidth = 2;
+ctx.beginPath();
+weekly.forEach((v,i)=>{
+  const x = toX(i);
+  const y = toY(v);
+  if(i===0) ctx.moveTo(x,y);
+  else ctx.lineTo(x,y);
+});
+ctx.stroke();
 }
 function renderWeightLog(){
   const log = document.getElementById("weightLog"); log.innerHTML = ""; sortWeights();
