@@ -543,6 +543,23 @@ document.getElementById("periodStartInput").value = period.startDate || "";
 document.getElementById("weightDateInput").value = getTodayKey();
 renderSummary(); renderHabits(); renderRecords(); renderNotifications(); renderHouse(); renderShopping(); renderCustomSymptoms(); renderPeriodCalendar(); drawWeightChart(); renderWeightLog(); updateNotificationStatus();
 setInterval(() => { document.getElementById("statusTime").textContent = nowTimeLabel(); }, 30000);
+function scheduleDailyNotification(hour, minute, message){
+  function checkTime(){
+    const now = new Date();
+    if(now.getHours() === hour && now.getMinutes() === minute){
+      if(Notification.permission === "granted"){
+        new Notification("Routine Home", { body: message });
+      }
+    }
+  }
+  setInterval(checkTime, 60000);
+}
+
+// 例：朝7時
+scheduleDailyNotification(7, 0, "朝の習慣ちょっとだけやろう");
+
+// 夜21時
+scheduleDailyNotification(21, 0, "今日の体調だけでも記録しよ");
 </script>
 </body>
 </html>
