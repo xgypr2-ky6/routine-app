@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Test Health</title>
+<style>
+body { font-family: sans-serif; padding:20px; background:#fff6f8;}
+button, select, input { font-size:16px; padding:10px; margin:5px; }
+.tag { display:inline-block; padding:8px 12px; border:1px solid #ccc; border-radius:20px; margin:4px; cursor:pointer;}
+.selected { background:#ffdce5; }
+</style>
+</head>
+<body>
+
+<h2>動作確認ページ</h2>
+
+<h3>周期</h3>
+<select id="cycle">
+<option value="">選択</option>
+<option>生理中</option>
+<option>前っぽい</option>
+<option>排卵期っぽい</option>
+<option>安定</option>
+</select>
+
+<h3>体調</h3>
+<select id="condition">
+<option value="">選択</option>
+<option>元気</option>
+<option>普通</option>
+<option>だるい</option>
+<option>しんどい</option>
+</select>
+
+<h3>症状</h3>
+<div id="symptoms"></div>
+
+<input id="custom" placeholder="症状追加">
+<button onclick="addSymptom()">追加</button>
+
+<h3>選択済み</h3>
+<div id="selected"></div>
+
+<br>
+<button onclick="save()">登録</button>
+
+<script>
+const baseSymptoms = ["頭痛","胃痛","吐き気","腹痛","眠気","だるさ","イライラ","腰痛"];
+let selected = [];
+
+function render(){
+  const box = document.getElementById("symptoms");
+  box.innerHTML = "";
+  baseSymptoms.forEach(s=>{
+    const el = document.createElement("div");
+    el.className = "tag" + (selected.includes(s) ? " selected":"");
+    el.innerText = s;
+    el.onclick = ()=>{
+      if(selected.includes(s)){
+        selected = selected.filter(x=>x!==s);
+      }else{
+        selected.push(s);
+      }
+      render();
+    };
+    box.appendChild(el);
+  });
+
+  const sel = document.getElementById("selected");
+  sel.innerHTML = "";
+  selected.forEach(s=>{
+    const el = document.createElement("div");
+    el.className = "tag selected";
+    el.innerText = s + " ×";
+    el.onclick = ()=>{
+      selected = selected.filter(x=>x!==s);
+      render();
+    };
+    sel.appendChild(el);
+  });
+}
+
+function addSymptom(){
+  const val = document.getElementById("custom").value;
+  if(!val) return;
+  baseSymptoms.push(val);
+  document.getElementById("custom").value="";
+  render();
+}
+
+function save(){
+  alert("保存されたよ！");
+}
+
+render();
+</script>
+
+</body>
+</html>
