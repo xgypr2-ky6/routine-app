@@ -1,8 +1,0 @@
-{
-  "name": "Routine Home Fresh",
-  "short_name": "Routine Fresh",
-  "start_url": "./index.html?v=20260402b",
-  "display": "standalone",
-  "background_color": "#fff6f8",
-  "theme_color": "#fff6f8"
-}
