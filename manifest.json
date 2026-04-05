@@ -1,0 +1,8 @@
+{
+  "name": "Routine Home Stable Native",
+  "short_name": "Routine Native",
+  "start_url": "./index.html?v=20260404native",
+  "display": "standalone",
+  "background_color": "#fff6f8",
+  "theme_color": "#fff6f8"
+}
