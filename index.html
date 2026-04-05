@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#fff6f8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Routine Home">
+<title>Routine Home</title>
+<link rel="manifest" href="./manifest.json?v=20260405a">
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('./service-worker.js').catch(() => {}));
+}
+</script>
+<style>
+:root{--bg1:#fffdfb;--bg2:#fff6f8;--card:#ffffffee;--text:#4d4038;--sub:#85756d;--pink:#f3d7df;--pink-strong:#eeb8c8;--gold:#d7b873;--shadow:0 14px 30px rgba(125,96,82,.10);--radius:24px}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Hiragino Sans","Yu Gothic","Meiryo",sans-serif;color:var(--text);background:radial-gradient(circle at top left,#fffdfd 0%,#fff7f7 32%,transparent 58%),linear-gradient(180deg,var(--bg1) 0%,var(--bg2) 100%);min-height:100vh;padding:18px 14px 108px}
+.app-shell{max-width:460px;margin:0 auto}
+.iphone-status{display:flex;justify-content:space-between;align-items:center;padding:0 8px 10px;font-size:13px;color:#5d5049;font-weight:700}
+.hero{background:linear-gradient(180deg,rgba(255,255,255,.92),rgba(255,248,250,.95));border:1px solid #f0dfd7;box-shadow:var(--shadow);border-radius:30px;padding:18px 18px 16px;position:relative;overflow:hidden;backdrop-filter:blur(8px);margin-bottom:12px}
+.hero:before{content:"";position:absolute;inset:auto -30px -48px auto;width:160px;height:160px;background:radial-gradient(circle,rgba(238,184,200,.35),rgba(255,255,255,0) 65%);pointer-events:none}
+.badge{display:inline-flex;align-items:center;gap:6px;padding:7px 11px;border-radius:999px;background:linear-gradient(90deg,#fff8ea,#fdf0f4);border:1px solid #f0e3ca;color:#7a6652;font-size:12px;font-weight:700;margin-bottom:10px}
+h1{margin:0;font-size:28px;line-height:1.15}
+.hero-grid{margin-top:14px;display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.mini-card{background:rgba(255,255,255,.82);border:1px solid #f0e4db;border-radius:18px;padding:12px 10px;text-align:center}
+.mini-card .label{font-size:11px;color:var(--sub);margin-bottom:5px}.mini-card .value{font-size:18px;font-weight:800}
+.progress{height:13px;border-radius:999px;overflow:hidden;background:#f7ece7;border:1px solid #f0e0d8;margin-top:8px}.progress>div{height:100%;width:0;background:linear-gradient(90deg,var(--gold),var(--pink-strong))}
+.small{font-size:12px;color:var(--sub)} .tiny{font-size:11px;color:var(--sub)}
+.panel{display:none}.panel.active{display:block}
+.card{background:var(--card);border:1px solid #eedfd7;border-radius:var(--radius);box-shadow:var(--shadow);padding:15px;margin-top:12px;backdrop-filter:blur(6px)}
+.card-title{margin:0 0 12px;font-size:18px;display:flex;justify-content:space-between;gap:10px;align-items:center}
+.icon-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.app-icon{background:linear-gradient(180deg,#fff,#fff7f7);border:1px solid #efdfd9;border-radius:22px;padding:12px 8px 10px;text-align:center;min-height:94px;box-shadow:0 8px 20px rgba(125,96,82,.06);cursor:pointer}
+.app-icon .emoji,.banner .emoji{width:46px;height:46px;margin:0 auto 8px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:24px;background:linear-gradient(180deg,#fff8ea,#fdeef3);border:1px solid #f0dfd1}
+.app-icon span{display:block;font-size:12px;font-weight:700;line-height:1.3;color:#6d5b53}
+.banner{display:flex;align-items:center;gap:12px;background:linear-gradient(180deg,#fff,#fff8fa);border:1px solid #efdfd9;border-radius:20px;padding:14px}
+.banner .emoji{margin:0;flex:0 0 auto;width:48px;height:48px}.banner .title{font-weight:800;font-size:16px}.banner .desc{font-size:12px;color:var(--sub);margin-top:3px}
+.top-back,.action,.ghost,.nav-btn,.mini-delete,.period-btn,.tab-btn{border:none;cursor:pointer;font-weight:700;border-radius:14px}
+.top-back{width:100%;padding:12px 14px;background:#fff;border:1px solid #ecdcd4;color:#715f57;margin-bottom:12px}
+.action{padding:12px 14px;background:linear-gradient(180deg,#fdf0f4,#f8dfe7);color:#6f4f5b;border:1px solid #ebd0d8;width:100%}
+.ghost{padding:12px 14px;background:#fffaf3;color:#7d674a;border:1px solid #efdfbf;flex:1}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+input[type="text"],input[type="date"],select{width:100%;border:1px solid #ecdcd4;border-radius:16px;padding:12px;font-size:16px;color:var(--text);background:#fff;margin-bottom:10px;min-height:46px}
+.inline-two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.field-label{display:block;font-size:12px;font-weight:800;color:#7d6a62;margin:2px 0 6px}
+.record-block{margin-bottom:14px}.record-label{font-size:14px;font-weight:800;margin-bottom:8px}.record-result{margin:6px 0 14px;font-size:12px;color:#7d6c64}
+.period-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.period-btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 14px;background:#fff;border:1px solid #ecdcd5;color:#715f57}
+.period-btn.selected{background:linear-gradient(180deg,#fff8ea,#fdeef4);border-color:#e5d3af;color:#6f5749}
+.checkbox-list{display:flex;flex-direction:column;gap:10px}
+.checkbox-item{display:flex;align-items:center;gap:10px;border:1px solid #ecdcd5;background:#fff;border-radius:16px;padding:10px 12px}
+.checkbox-item input{width:20px;height:20px;accent-color:#d7b873}
+.custom-symptom-list{display:flex;flex-direction:column;gap:8px;margin:8px 0 10px}
+.custom-pill{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px;border-radius:16px;border:1px solid #ecdcd5;background:#fff;font-size:13px;color:#715f57;font-weight:700}
+.mini-delete{background:#fff7fa;color:#9a6f7f;border:1px solid #ecd1da;padding:7px 10px;border-radius:999px}
+.calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:10px}
+.calendar-head,.calendar-day{text-align:center;font-size:11px}.calendar-head{color:#8f7f76;font-weight:800;padding:6px 0}
+.calendar-day{border:1px solid #efe0d9;border-radius:14px;padding:10px 0;background:#fff;min-height:48px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:#6d5b53;cursor:pointer}
+.calendar-day.blank{background:transparent;border:none;cursor:default}
+.calendar-day.today{border-color:#e5d3af;background:#fffaf0}.calendar-day.period{background:#fff1f5;border-color:#efcfdb}.calendar-day.ovulation{background:#fff8ec;border-color:#ead8b1}.calendar-day.logged{box-shadow:inset 0 0 0 2px #eeb8c8}.calendar-day.selected{box-shadow:inset 0 0 0 2px #7d6a62}.calendar-day .mark{font-size:10px;font-weight:800;color:#9a6377}
+.calendar-legend{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.legend-item{font-size:11px;color:#7c6c64;border:1px solid #eee1d8;border-radius:999px;padding:5px 8px;background:#fff}
+.summary-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.summary-item{padding:10px 12px;border:1px solid #efe0d9;border-radius:16px;background:#fff;font-size:12px}
+.tab-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.tab-btn{padding:12px;background:#fff;border:1px solid #ecdcd5;color:#715f57}
+.tab-btn.active{background:linear-gradient(180deg,#fff8ea,#fdeef4);border-color:#e5d3af;color:#6f5749}
+.tab-panel{display:none}.tab-panel.active{display:block}
+.popup-overlay{position:fixed;inset:0;background:rgba(77,64,56,.28);display:none;align-items:center;justify-content:center;padding:20px;z-index:30;pointer-events:none}
+.popup-overlay.show{display:flex;pointer-events:auto}
+.popup-card{width:min(420px,100%);background:#fff;border:1px solid #ecdcd4;border-radius:24px;box-shadow:0 20px 40px rgba(125,96,82,.18);padding:18px}
+.popup-title{font-size:18px;font-weight:800;margin:0 0 10px}.popup-list{display:grid;gap:8px}.popup-item{padding:10px 12px;border:1px solid #efe0d9;border-radius:14px;background:#fffafc;font-size:13px}
+.toast{position:fixed;left:50%;transform:translateX(-50%) translateY(20px);bottom:110px;background:rgba(77,64,56,.96);color:#fff;padding:12px 16px;border-radius:999px;font-size:13px;font-weight:700;opacity:0;pointer-events:none;transition:all .25s ease;z-index:9999;white-space:nowrap;max-width:calc(100vw - 40px);overflow:hidden;text-overflow:ellipsis;box-shadow:0 10px 24px rgba(0,0,0,.18)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.bottom-nav{position:fixed;left:50%;transform:translateX(-50%);bottom:12px;width:min(460px,calc(100vw - 22px));background:rgba(255,255,255,.92);border:1px solid #ecdcd4;box-shadow:0 12px 30px rgba(125,96,82,.14);border-radius:24px;display:grid;grid-template-columns:repeat(4,1fr);padding:8px;backdrop-filter:blur(10px);z-index:10}
+.nav-btn{background:transparent;padding:8px 4px;color:#7d6a62;font-size:11px}.nav-btn strong{display:block;font-size:20px;line-height:1;margin-bottom:4px}.nav-btn.active{background:linear-gradient(180deg,#fff7f9,#fdf0f4);color:#6d4d59;border-radius:18px}
+@media (max-width:420px){.inline-two{grid-template-columns:1fr}.period-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app-shell">
+  <div class="iphone-status"><div id="statusTime">9:41</div><div>◉◉◉ 􀙇</div></div>
+  <section class="panel active" id="homePanel">
+    <section class="hero">
+      <div class="badge">✦ わたし専用 ルーティン管理</div>
+      <h1>Routine Home</h1>
+      <div class="hero-grid">
+        <div class="mini-card"><div class="label">今日の達成率</div><div class="value" id="percentText">0%</div></div>
+        <div class="mini-card"><div class="label">完了数</div><div class="value" id="doneText">0/0</div></div>
+        <div class="mini-card"><div class="label">連続日数</div><div class="value" id="streakText">0日</div></div>
+      </div>
+      <div class="progress"><div id="bar"></div></div>
+      <div class="small" style="margin-top:8px;" id="todayLabel"></div>
+    </section>
+    <div class="card">
+      <h2 class="card-title">ホーム</h2>
+      <div class="icon-grid">
+        <button type="button" class="app-icon" data-panel="routinePanel"><div class="emoji">☀️</div><span>習慣</span></button>
+        <button type="button" class="app-icon" data-panel="dietPanel"><div class="emoji">🩰</div><span>ダイエット</span></button>
+        <button type="button" class="app-icon" data-panel="cyclePanel"><div class="emoji">🌷</div><span>生理・体調管理</span></button>
+        <button type="button" class="app-icon" data-panel="housePanel"><div class="emoji">🏠</div><span>家事管理</span></button>
+        <button type="button" class="app-icon" data-panel="shoppingPanel"><div class="emoji">🛒</div><span>買い物メモ</span></button>
+        <button type="button" class="app-icon" data-panel="weightPanel"><div class="emoji">📊</div><span>体重</span></button>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel" id="routinePanel"><button type="button" class="top-back" data-panel="homePanel">← ホームに戻る</button><div class="card"><div class="banner"><div class="emoji">☀️</div><div><div class="title">習慣</div><div class="desc">この版では簡略表示です</div></div></div></div></section>
+  <section class="panel" id="dietPanel"><button type="button" class="top-back" data-panel="homePanel">← ホームに戻る</button><div class="card"><div class="banner"><div class="emoji">🩰</div><div><div class="title">ダイエット</div><div class="desc">この版では簡略表示です</div></div></div></div></section>
+
+  <section class="panel" id="cyclePanel">
+    <button type="button" class="top-back" data-panel="homePanel">← ホームに戻る</button>
+    <div class="card"><div class="banner"><div class="emoji">🌷</div><div><div class="title">生理・体調管理</div><div class="desc">安定版（スワイプ廃止）</div></div></div></div>
+
+    <div class="card">
+      <h2 class="card-title">生理期間</h2>
+      <div class="inline-two">
+        <div><label class="field-label" for="periodStartInput">生理開始日</label><input type="date" id="periodStartInput"></div>
+        <div><label class="field-label" for="periodEndInput">生理終了日</label><input type="date" id="periodEndInput"></div>
+      </div>
+      <button type="button" class="action" id="savePeriodRangeBtn">生理期間を保存する</button>
+      <div class="small" id="periodSummary" style="margin-top:8px"></div>
+    </div>
+
+    <div class="card">
+      <h2 class="card-title"><span>月カレンダー</span><span class="tiny" id="calendarMonthLabel"></span></h2>
+      <div class="btn-row"><button type="button" class="ghost" id="prevMonthBtn">前の月</button><button type="button" class="ghost" id="nextMonthBtn">次の月</button></div>
+      <div class="calendar-grid" id="calendarGrid"></div>
+      <div class="calendar-legend"><span class="legend-item">薄ピンク：生理期間/予測</span><span class="legend-item">薄金：排卵期目安</span><span class="legend-item">濃い枠：記録あり</span></div>
+    </div>
+
+    <div class="card">
+      <div class="tab-row">
+        <button type="button" class="tab-btn active" data-tab="recordTab">今日の体調記録</button>
+        <button type="button" class="tab-btn" data-tab="summaryTab">今月の集計</button>
+      </div>
+
+      <div class="tab-panel active" id="recordTab">
+        <div class="small" style="margin-top:10px">記録対象日：<span id="editingDateLabel">今日</span></div>
+
+        <div class="record-block">
+          <div class="record-label">周期</div>
+          <div id="periodButtonGroup" class="period-grid"></div>
+          <div class="record-result" id="cycleResult">今日の記録：未記録</div>
+        </div>
+
+        <div class="record-block">
+          <div class="record-label">体調</div>
+          <select id="conditionSelect"><option value="">選んでください</option></select>
+          <div class="record-result" id="conditionResult">今日の記録：未記録</div>
+        </div>
+
+        <div class="record-block">
+          <div class="record-label">症状（複数選択）</div>
+          <div class="checkbox-list" id="symptomList"></div>
+          <input type="text" id="customSymptomInput" placeholder="例：肩こり、食欲低下">
+          <button type="button" class="action" id="addCustomSymptomBtn">症状を追加する</button>
+          <div class="custom-symptom-list" id="customSymptomList"></div>
+          <div class="record-result" id="symptomResult">今日の記録：未記録</div>
+        </div>
+
+        <button type="button" class="action" id="saveCycleRecordBtn">この内容で登録する</button>
+      </div>
+
+      <div class="tab-panel" id="summaryTab">
+        <div class="small" style="margin-top:10px">この月の体調と症状の回数です</div>
+        <div class="summary-grid" id="monthlySummary" style="margin-top:10px"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 class="card-title">選択日の記録</h2>
+      <div class="small">カレンダーは日付を選択後、同じ日をもう一度タップでポップアップ表示</div>
+      <div class="small" id="selectedDateLabel" style="margin-top:6px">日付を選ぶと表示されます</div>
+      <div class="summary-grid" id="selectedDateSummary"></div>
+    </div>
+  </section>
+
+  <section class="panel" id="housePanel"><button type="button" class="top-back" data-panel="homePanel">← ホームに戻る</button><div class="card"><div class="banner"><div class="emoji">🏠</div><div><div class="title">家事管理</div><div class="desc">この版では簡略表示です</div></div></div></div></section>
+  <section class="panel" id="shoppingPanel"><button type="button" class="top-back" data-panel="homePanel">← ホームに戻る</button><div class="card"><div class="banner"><div class="emoji">🛒</div><div><div class="title">買い物メモ</div><div class="desc">この版では簡略表示です</div></div></div></div></section>
+  <section class="panel" id="weightPanel"><button type="button" class="top-back" data-panel="homePanel">← ホームに戻る</button><div class="card"><div class="banner"><div class="emoji">📊</div><div><div class="title">体重</div><div class="desc">この版では簡略表示です</div></div></div></div></section>
+</div>
+
+<div class="popup-overlay" id="dayPopup">
+  <div class="popup-card">
+    <div class="popup-title" id="dayPopupTitle">日付の記録</div>
+    <div class="popup-list" id="dayPopupList"></div>
+    <div class="btn-row"><button type="button" class="action" id="closeDayPopupBtn">閉じる</button></div>
+  </div>
+</div>
+
+<div class="toast" id="toast">保存しました</div>
+
+<nav class="bottom-nav">
+  <button type="button" class="nav-btn active" data-panel="homePanel"><strong>⌂</strong>ホーム</button>
+  <button type="button" class="nav-btn" data-panel="routinePanel"><strong>✓</strong>習慣</button>
+  <button type="button" class="nav-btn" data-panel="cyclePanel"><strong>♡</strong>体調</button>
+  <button type="button" class="nav-btn" data-panel="weightPanel"><strong>▣</strong>体重</button>
+</nav>
+
+<script>
+const STORAGE_KEYS = {records:"routine_plus_records", periods:"routine_plus_periods", customSymptoms:"routine_plus_custom_symptoms"};
+const defaultSymptoms = ["なし","頭痛","胃痛","吐き気","腹痛","眠気","だるさ","イライラ","腰痛"];
+const cycleOptions = ["生理中","前っぽい","排卵期っぽい","安定"];
+const conditionOptions = ["元気","普通","だるい","しんどい"];
+function loadJSON(key, fallback){ try{ const raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : fallback; } catch(e){ return fallback; } }
+function saveJSON(key, value){ localStorage.setItem(key, JSON.stringify(value)); }
+function getTodayKey(){ const d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+function nowTimeLabel(){ return new Date().toLocaleTimeString("ja-JP",{hour:"2-digit",minute:"2-digit"}); }
+function getTodayLabel(){ return new Date().toLocaleDateString("ja-JP",{year:"numeric",month:"long",day:"numeric",weekday:"short"}); }
+function esc(str){ return String(str).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;"); }
+function dateKeyFromDate(d){ return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+function addDays(date, days){ const d = new Date(date); d.setDate(d.getDate()+days); return d; }
+function formatDateJP(str){ if(!str) return ""; const d = new Date(str+"T00:00:00"); return d.toLocaleDateString("ja-JP",{year:"numeric",month:"long",day:"numeric"}); }
+let records = loadJSON(STORAGE_KEYS.records, {});
+let periods = loadJSON(STORAGE_KEYS.periods, []);
+let customSymptoms = loadJSON(STORAGE_KEYS.customSymptoms, defaultSymptoms);
+let calendarOffset = 0;
+let selectedDateKey = getTodayKey();
+let activeRecordDate = getTodayKey();
+let pendingCycleRecord = null;
+let toastTimer = null;
+function ensureRecord(dateKey){ if(!records[dateKey]) records[dateKey] = {symptoms:[]}; if(!Array.isArray(records[dateKey].symptoms)) records[dateKey].symptoms = []; }
+function showToast(message){ const el = document.getElementById("toast"); el.textContent = message; el.classList.add("show"); clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove("show"), 2200); }
+function switchPanel(panelId){ document.querySelectorAll(".panel").forEach(p => p.classList.toggle("active", p.id === panelId)); document.querySelectorAll(".nav-btn").forEach(b => b.classList.toggle("active", b.dataset.panel === panelId)); window.scrollTo({top:0, behavior:"smooth"}); }
+document.querySelectorAll("[data-panel]").forEach(btn => btn.addEventListener("click", (e) => { e.preventDefault(); const panel = btn.getAttribute("data-panel"); if(panel) switchPanel(panel); }));
+document.querySelectorAll("[data-tab]").forEach(btn => btn.addEventListener("click", () => { const tab = btn.dataset.tab; document.querySelectorAll(".tab-btn").forEach(x => x.classList.toggle("active", x.dataset.tab === tab)); document.querySelectorAll(".tab-panel").forEach(x => x.classList.toggle("active", x.id === tab)); }));
+function renderSummary(){ document.getElementById("doneText").textContent = "0/0"; document.getElementById("percentText").textContent = "0%"; document.getElementById("streakText").textContent = "0日"; document.getElementById("bar").style.width = "0%"; document.getElementById("todayLabel").textContent = getTodayLabel(); document.getElementById("statusTime").textContent = nowTimeLabel(); }
+function ensurePending(){ ensureRecord(activeRecordDate); pendingCycleRecord = { cycle: records[activeRecordDate].cycle || "", condition: records[activeRecordDate].condition || "", symptoms: [...records[activeRecordDate].symptoms] }; }
+function updateEditingDateLabel(){ document.getElementById("editingDateLabel").textContent = activeRecordDate === getTodayKey() ? "今日" : activeRecordDate; }
+function renderPeriodButtons(){ const box = document.getElementById("periodButtonGroup"); box.innerHTML = ""; cycleOptions.forEach(value => { const btn = document.createElement("button"); btn.type = "button"; btn.className = "period-btn" + (pendingCycleRecord.cycle === value ? " selected" : ""); btn.textContent = value; btn.addEventListener("click", () => { pendingCycleRecord.cycle = value; renderCycleRecordUI(); }); box.appendChild(btn); }); }
+function renderConditionSelect(){ const select = document.getElementById("conditionSelect"); select.innerHTML = '<option value="">選んでください</option>' + conditionOptions.map(v => `<option value="${v}" ${pendingCycleRecord.condition===v?'selected':''}>${v}</option>`).join(""); }
+function renderSymptoms(){ const box = document.getElementById("symptomList"); box.innerHTML = ""; customSymptoms.forEach(value => { const item = document.createElement("label"); item.className = "checkbox-item"; item.innerHTML = `<input type="checkbox" ${pendingCycleRecord.symptoms.includes(value)?'checked':''}><span>${esc(value)}</span>`; item.querySelector("input").addEventListener("change", (e) => { if(value === "なし"){ pendingCycleRecord.symptoms = e.target.checked ? ["なし"] : []; } else { pendingCycleRecord.symptoms = pendingCycleRecord.symptoms.filter(x => x !== "なし"); if(e.target.checked){ if(!pendingCycleRecord.symptoms.includes(value)) pendingCycleRecord.symptoms.push(value); } else { pendingCycleRecord.symptoms = pendingCycleRecord.symptoms.filter(x => x !== value); } } renderCycleRecordUI(); }); box.appendChild(item); }); }
+function renderCustomSymptomList(){ const list = document.getElementById("customSymptomList"); list.innerHTML = ""; const preset = new Set(defaultSymptoms); customSymptoms.filter(s => !preset.has(s)).forEach(name => { const pill = document.createElement("div"); pill.className = "custom-pill"; pill.innerHTML = `<span>${esc(name)}</span><button type="button" class="mini-delete">削除</button>`; pill.querySelector("button").addEventListener("click", () => { if(confirm(`「${name}」を削除しますか？`)){ customSymptoms = customSymptoms.filter(x => x !== name); Object.keys(records).forEach(day => { ensureRecord(day); records[day].symptoms = records[day].symptoms.filter(x => x !== name); }); saveJSON(STORAGE_KEYS.customSymptoms, customSymptoms); saveJSON(STORAGE_KEYS.records, records); ensurePending(); renderCycleRecordUI(); renderSelectedDateSummary(); renderMonthlySummary(); renderPeriodCalendar(); showToast("症状を削除しました"); } }); list.appendChild(pill); }); }
+function renderCycleRecordUI(){ ensurePending(); updateEditingDateLabel(); renderPeriodButtons(); renderConditionSelect(); renderSymptoms(); renderCustomSymptomList(); document.getElementById("cycleResult").textContent = "今日の記録：" + (pendingCycleRecord.cycle || "未記録"); document.getElementById("conditionResult").textContent = "今日の記録：" + (pendingCycleRecord.condition || "未記録"); document.getElementById("symptomResult").textContent = "今日の記録：" + (pendingCycleRecord.symptoms.length ? pendingCycleRecord.symptoms.join("、") : "未記録"); }
+document.getElementById("conditionSelect").addEventListener("change", (e) => { pendingCycleRecord.condition = e.target.value; renderCycleRecordUI(); });
+document.getElementById("addCustomSymptomBtn").addEventListener("click", () => { const input = document.getElementById("customSymptomInput"); const value = input.value.trim(); if(!value){ showToast("症状名を入力してください"); return; } if(customSymptoms.includes(value)){ showToast("同じ症状がすでにあります"); return; } customSymptoms.push(value); saveJSON(STORAGE_KEYS.customSymptoms, customSymptoms); input.value = ""; renderCycleRecordUI(); showToast("症状を追加しました"); });
+document.getElementById("saveCycleRecordBtn").addEventListener("click", () => { ensureRecord(activeRecordDate); records[activeRecordDate].cycle = pendingCycleRecord.cycle || ""; records[activeRecordDate].condition = pendingCycleRecord.condition || ""; records[activeRecordDate].symptoms = [...pendingCycleRecord.symptoms]; saveJSON(STORAGE_KEYS.records, records); renderCycleRecordUI(); renderSelectedDateSummary(); renderMonthlySummary(); renderPeriodCalendar(); showToast(`${activeRecordDate} を保存しました`); });
+function dateInPeriod(date, period){ const d = new Date(dateKeyFromDate(date)+"T00:00:00"); const s = new Date(period.start+"T00:00:00"); const e = new Date(period.end+"T00:00:00"); return d>=s && d<=e; }
+function hasAnyCycleRecord(dateStr){ const rec = records[dateStr]; return !!(rec && (rec.cycle || rec.condition || (rec.symptoms && rec.symptoms.length))); }
+function periodPredictions(){ if(periods.length === 0) return []; const latest = [...periods].sort((a,b)=>a.start.localeCompare(b.start)).slice(-3); let avg = 28; if(latest.length >= 2){ const diffs = []; for(let i=1;i<latest.length;i++){ const a = new Date(latest[i-1].start+"T00:00:00"); const b = new Date(latest[i].start+"T00:00:00"); diffs.push(Math.round((b-a)/(1000*60*60*24))); } avg = Math.round(diffs.reduce((x,y)=>x+y,0)/diffs.length); } const last = latest[latest.length-1]; const duration = Math.max(1, Math.round(latest.reduce((acc,p)=>acc+((new Date(p.end)-new Date(p.start))/(1000*60*60*24)+1),0)/latest.length)); const preds = []; let nextStart = new Date(last.start+"T00:00:00"); for(let i=0;i<6;i++){ nextStart = addDays(nextStart, avg); preds.push({start:dateKeyFromDate(nextStart), end:dateKeyFromDate(addDays(nextStart, duration-1)), ovulation:dateKeyFromDate(addDays(nextStart,-14))}); } return preds; }
+function showDayPopup(dateKey){ ensureRecord(dateKey); const rec = records[dateKey]; document.getElementById("dayPopupTitle").textContent = `${dateKey} の記録`; const list = document.getElementById("dayPopupList"); list.innerHTML = ""; const items = [["周期", rec.cycle || "記録なし"],["体調", rec.condition || "記録なし"],["症状", rec.symptoms.length ? rec.symptoms.join("、") : "記録なし"]]; items.forEach(([k,v]) => { const div = document.createElement("div"); div.className = "popup-item"; div.innerHTML = `<strong>${k}</strong><div style="margin-top:4px">${v}</div>`; list.appendChild(div); }); document.getElementById("dayPopup").classList.add("show"); }
+function renderPeriodCalendar(){ const grid = document.getElementById("calendarGrid"); grid.innerHTML = ""; ["日","月","火","水","木","金","土"].forEach(h => { const x = document.createElement("div"); x.className = "calendar-head"; x.textContent = h; grid.appendChild(x); }); const today = new Date(); const base = new Date(today.getFullYear(), today.getMonth() + calendarOffset, 1); const monthStart = new Date(base.getFullYear(), base.getMonth(), 1); const monthEnd = new Date(base.getFullYear(), base.getMonth()+1, 0); document.getElementById("calendarMonthLabel").textContent = `${base.getFullYear()}年 ${base.getMonth()+1}月`; for(let i=0;i<monthStart.getDay();i++){ const blank = document.createElement("div"); blank.className = "calendar-day blank"; grid.appendChild(blank); } const preds = periodPredictions(); if(periods.length){ const latest = [...periods].sort((a,b)=>a.start.localeCompare(b.start)).slice(-1)[0]; document.getElementById("periodSummary").textContent = `最新の生理期間：${formatDateJP(latest.start)}〜${formatDateJP(latest.end)}`; } else { document.getElementById("periodSummary").textContent = "まだ生理期間が登録されていません。"; } for(let day=1; day<=monthEnd.getDate(); day++){ const current = new Date(base.getFullYear(), base.getMonth(), day); const key = dateKeyFromDate(current); const cell = document.createElement("button"); cell.type = "button"; cell.className = "calendar-day"; if(dateKeyFromDate(current) === dateKeyFromDate(today)) cell.classList.add("today"); if(key === selectedDateKey) cell.classList.add("selected"); if(periods.some(p=>dateInPeriod(current,p))) cell.classList.add("period"); if(preds.some(p=>{ const s = new Date(p.start+"T00:00:00"), e = new Date(p.end+"T00:00:00"); return current>=s && current<=e; })) cell.classList.add("period"); if(preds.some(p=>p.ovulation===key)) cell.classList.add("ovulation"); if(hasAnyCycleRecord(key)) cell.classList.add("logged"); let mark = ""; if(periods.some(p=>dateInPeriod(current,p))) mark = "生理"; else if(preds.some(p=>{ const s = new Date(p.start+"T00:00:00"), e = new Date(p.end+"T00:00:00"); return current>=s && current<=e; })) mark = "予測"; else if(preds.some(p=>p.ovulation===key)) mark = "排卵"; cell.innerHTML = `<div>${day}</div>${mark ? `<div class="mark">${mark}</div>` : ``}`; cell.addEventListener("click", () => { const wasSelected = selectedDateKey === key; selectedDateKey = key; activeRecordDate = key; renderSelectedDateSummary(); renderCycleRecordUI(); renderPeriodCalendar(); if(wasSelected) setTimeout(() => showDayPopup(key), 10); }); grid.appendChild(cell); } }
+function renderSelectedDateSummary(){ const label = document.getElementById("selectedDateLabel"); ensureRecord(selectedDateKey); const rec = records[selectedDateKey]; label.textContent = `${selectedDateKey} の記録（この日を選ぶと上で編集できます）`; const items = [["周期", rec.cycle || "未記録"],["体調", rec.condition || "未記録"],["症状", rec.symptoms.length ? rec.symptoms.join("、") : "未記録"],["生理", periods.some(p=>{ const d = new Date(selectedDateKey+"T00:00:00"), s = new Date(p.start+"T00:00:00"), e = new Date(p.end+"T00:00:00"); return d>=s && d<=e; }) ? "生理期間内" : "-"]]; const grid = document.getElementById("selectedDateSummary"); grid.innerHTML = ""; items.forEach(([k,v]) => { const el = document.createElement("div"); el.className = "summary-item"; el.innerHTML = `<strong>${k}</strong><div style="margin-top:4px">${v}</div>`; grid.appendChild(el); }); }
+function renderMonthlySummary(){ const grid = document.getElementById("monthlySummary"); grid.innerHTML = ""; const today = new Date(), base = new Date(today.getFullYear(), today.getMonth()+calendarOffset, 1), y = base.getFullYear(), m = base.getMonth()+1; const keys = Object.keys(records).filter(k=>k.startsWith(`${y}-${String(m).padStart(2,'0')}-`)); const conditionCounts = {}, symptomCounts = {}; keys.forEach(k => { ensureRecord(k); const rec = records[k]; if(rec.condition) conditionCounts[rec.condition] = (conditionCounts[rec.condition] || 0) + 1; rec.symptoms.forEach(s => symptomCounts[s] = (symptomCounts[s] || 0) + 1); }); const items = []; Object.entries(conditionCounts).forEach(([k,v])=>items.push([`体調: ${k}`, `${v}回`])); Object.entries(symptomCounts).forEach(([k,v])=>items.push([`症状: ${k}`, `${v}回`])); if(items.length === 0) items.push(["この月の記録","まだありません"]); items.forEach(([k,v]) => { const el = document.createElement("div"); el.className = "summary-item"; el.innerHTML = `<strong>${k}</strong><div style="margin-top:4px">${v}</div>`; grid.appendChild(el); }); }
+document.getElementById("savePeriodRangeBtn").addEventListener("click", () => { const start = document.getElementById("periodStartInput").value; const end = document.getElementById("periodEndInput").value; if(!start || !end){ showToast("開始日と終了日を入れてください"); return; } periods.push({start,end}); periods.sort((a,b)=>a.start.localeCompare(b.start)); saveJSON(STORAGE_KEYS.periods, periods); renderPeriodCalendar(); renderSelectedDateSummary(); showToast("生理期間を保存しました"); });
+document.getElementById("prevMonthBtn").addEventListener("click", () => { calendarOffset -= 1; renderPeriodCalendar(); renderMonthlySummary(); });
+document.getElementById("nextMonthBtn").addEventListener("click", () => { calendarOffset += 1; renderPeriodCalendar(); renderMonthlySummary(); });
+document.getElementById("closeDayPopupBtn").addEventListener("click", () => document.getElementById("dayPopup").classList.remove("show"));
+document.getElementById("dayPopup").addEventListener("click", (e) => { if(e.target.id === "dayPopup") document.getElementById("dayPopup").classList.remove("show"); });
+if(periods.length){ const latest = [...periods].sort((a,b)=>a.start.localeCompare(b.start)).slice(-1)[0]; document.getElementById("periodStartInput").value = latest.start; document.getElementById("periodEndInput").value = latest.end; }
+renderSummary(); renderCycleRecordUI(); renderPeriodCalendar(); renderSelectedDateSummary(); renderMonthlySummary(); setInterval(()=>{ document.getElementById("statusTime").textContent = nowTimeLabel(); }, 30000);
+</script>
+</body>
+</html>
