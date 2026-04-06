@@ -1,8 +1,0 @@
-{
-  "name": "Health Only",
-  "short_name": "Health Only",
-  "start_url": "./index.html?v=20260405b",
-  "display": "standalone",
-  "background_color": "#fff6f8",
-  "theme_color": "#fff6f8"
-}
