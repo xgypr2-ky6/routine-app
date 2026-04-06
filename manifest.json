@@ -1,8 +1,0 @@
-{
-  "name": "Routine Home No Carousel",
-  "short_name": "Routine NoCarousel",
-  "start_url": "./index.html?v=20260405a",
-  "display": "standalone",
-  "background_color": "#fff6f8",
-  "theme_color": "#fff6f8"
-}
