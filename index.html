@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#fff6f8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Health Only">
+<title>Health Only</title>
+<link rel="manifest" href="./manifest.json?v=20260405b">
+<style>
+body{font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;background:#fff6f8;margin:0;padding:18px;color:#4d4038}
+.wrap{max-width:460px;margin:0 auto}
+.card{background:#fff;border:1px solid #eedfd7;border-radius:22px;padding:16px;margin-bottom:14px}
+h1,h2,h3{margin:0 0 12px}
+button,select,input{font-size:16px}
+button{border:1px solid #ecdcd5;background:#fff;border-radius:16px;padding:12px 14px;cursor:pointer}
+.primary{background:#fdeef4}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.period-btn{min-width:140px}
+.period-btn.selected{background:#fdeef4;border-color:#e7a8b8}
+.checkbox-item{display:flex;align-items:center;gap:10px;border:1px solid #ecdcd5;background:#fff;border-radius:16px;padding:10px 12px;margin-bottom:8px}
+.checkbox-item input{width:20px;height:20px;accent-color:#d7b873}
+input[type="text"],input[type="date"],select{width:100%;border:1px solid #ecdcd4;border-radius:16px;padding:12px;background:#fff;margin-bottom:10px;min-height:46px}
+.custom-pill{display:flex;justify-content:space-between;align-items:center;border:1px solid #ecdcd5;border-radius:16px;padding:10px 12px;background:#fff;margin-bottom:8px}
+.small{font-size:12px;color:#85756d}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:20px;background:#4d4038;color:#fff;padding:12px 16px;border-radius:999px;opacity:0;transition:.25s;pointer-events:none}
+.toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+    <h1>生理・体調管理 だけ版</h1>
+    <div class="small">これが動けば、問題は元アプリのレイアウト側です。</div>
+  </div>
+
+  <div class="card">
+    <h2>生理期間</h2>
+    <input type="date" id="startDate">
+    <input type="date" id="endDate">
+    <button id="savePeriod" class="primary" type="button">生理期間を保存する</button>
+    <div id="periodText" class="small" style="margin-top:8px"></div>
+  </div>
+
+  <div class="card">
+    <h2>周期</h2>
+    <div id="cycleButtons" class="row"></div>
+    <div id="cycleResult" class="small"></div>
+  </div>
+
+  <div class="card">
+    <h2>体調</h2>
+    <select id="condition">
+      <option value="">選んでください</option>
+      <option>元気</option>
+      <option>普通</option>
+      <option>だるい</option>
+      <option>しんどい</option>
+    </select>
+    <div id="conditionResult" class="small"></div>
+  </div>
+
+  <div class="card">
+    <h2>症状</h2>
+    <div id="symptomList"></div>
+    <input id="customSymptom" type="text" placeholder="症状追加">
+    <button id="addSymptom" class="primary" type="button">症状を追加する</button>
+    <h3 style="margin-top:14px">追加した症状</h3>
+    <div id="customList"></div>
+    <div id="symptomResult" class="small"></div>
+  </div>
+
+  <div class="card">
+    <button id="saveAll" class="primary" type="button">この内容で登録する</button>
+  </div>
+</div>
+
+<div id="toast" class="toast">保存しました</div>
+
+<script>
+const cycleOptions = ["生理中","前っぽい","排卵期っぽい","安定"];
+const defaultSymptoms = ["なし","頭痛","胃痛","吐き気","腹痛","眠気","だるさ","イライラ","腰痛"];
+let customSymptoms = JSON.parse(localStorage.getItem("health_only_custom") || "[]");
+let selectedCycle = "";
+let selectedCondition = "";
+let selectedSymptoms = [];
+
+function toast(msg){
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  clearTimeout(window._toastTimer);
+  window._toastTimer = setTimeout(()=>t.classList.remove("show"), 1600);
+}
+function renderCycle(){
+  const box = document.getElementById("cycleButtons");
+  box.innerHTML = "";
+  cycleOptions.forEach(v=>{
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "period-btn" + (selectedCycle===v ? " selected":"");
+    b.textContent = v;
+    b.addEventListener("click", ()=>{
+      selectedCycle = v;
+      renderCycle();
+      renderResults();
+    });
+    box.appendChild(b);
+  });
+}
+function renderSymptoms(){
+  const box = document.getElementById("symptomList");
+  box.innerHTML = "";
+  [...defaultSymptoms, ...customSymptoms].forEach(v=>{
+    const label = document.createElement("label");
+    label.className = "checkbox-item";
+    label.innerHTML = `<input type="checkbox" ${selectedSymptoms.includes(v) ? "checked": ""}><span>${v}</span>`;
+    const input = label.querySelector("input");
+    input.addEventListener("change", ()=>{
+      if(v === "なし"){
+        selectedSymptoms = input.checked ? ["なし"] : [];
+      } else {
+        selectedSymptoms = selectedSymptoms.filter(x=>x!=="なし");
+        if(input.checked){
+          if(!selectedSymptoms.includes(v)) selectedSymptoms.push(v);
+        } else {
+          selectedSymptoms = selectedSymptoms.filter(x=>x!==v);
+        }
+      }
+      renderSymptoms();
+      renderResults();
+    });
+    box.appendChild(label);
+  });
+
+  const customBox = document.getElementById("customList");
+  customBox.innerHTML = "";
+  customSymptoms.forEach(v=>{
+    const row = document.createElement("div");
+    row.className = "custom-pill";
+    row.innerHTML = `<span>${v}</span><button type="button">削除</button>`;
+    row.querySelector("button").addEventListener("click", ()=>{
+      customSymptoms = customSymptoms.filter(x=>x!==v);
+      selectedSymptoms = selectedSymptoms.filter(x=>x!==v);
+      localStorage.setItem("health_only_custom", JSON.stringify(customSymptoms));
+      renderSymptoms();
+      renderResults();
+      toast("症状を削除しました");
+    });
+    customBox.appendChild(row);
+  });
+}
+function renderResults(){
+  document.getElementById("cycleResult").textContent = "選択中: " + (selectedCycle || "未選択");
+  document.getElementById("conditionResult").textContent = "選択中: " + (selectedCondition || "未選択");
+  document.getElementById("symptomResult").textContent = "選択中: " + (selectedSymptoms.length ? selectedSymptoms.join("、") : "未選択");
+}
+document.getElementById("condition").addEventListener("change", e=>{
+  selectedCondition = e.target.value;
+  renderResults();
+});
+document.getElementById("addSymptom").addEventListener("click", ()=>{
+  const input = document.getElementById("customSymptom");
+  const v = input.value.trim();
+  if(!v) return;
+  if(!customSymptoms.includes(v) && !defaultSymptoms.includes(v)) customSymptoms.push(v);
+  localStorage.setItem("health_only_custom", JSON.stringify(customSymptoms));
+  input.value = "";
+  renderSymptoms();
+  toast("症状を追加しました");
+});
+document.getElementById("savePeriod").addEventListener("click", ()=>{
+  const s = document.getElementById("startDate").value;
+  const e = document.getElementById("endDate").value;
+  document.getElementById("periodText").textContent = s && e ? `${s} 〜 ${e}` : "未保存";
+  toast("生理期間を保存しました");
+});
+document.getElementById("saveAll").addEventListener("click", ()=>{
+  alert("登録されたよ");
+});
+
+renderCycle();
+renderSymptoms();
+renderResults();
+</script>
+</body>
+</html>
