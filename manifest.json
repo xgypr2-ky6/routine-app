@@ -1,0 +1,8 @@
+{
+  "name": "Health Debug v3",
+  "short_name": "HealthDebug3",
+  "start_url": "./index.html?v=20260406debug3",
+  "display": "standalone",
+  "background_color": "#fff6f8",
+  "theme_color": "#fff6f8"
+}
