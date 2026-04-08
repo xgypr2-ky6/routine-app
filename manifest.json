@@ -1,8 +1,0 @@
-{
-  "name": "Routine Home Stable Base v2",
-  "short_name": "Routine Base v2",
-  "start_url": "./index.html?v=20260406stable2",
-  "display": "standalone",
-  "background_color": "#fff6f8",
-  "theme_color": "#fff6f8"
-}
